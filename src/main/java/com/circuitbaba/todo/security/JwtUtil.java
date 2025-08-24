@@ -2,40 +2,56 @@ package com.circuitbaba.todo.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
 
-    private final String secret = "supersecretkeysupersecretkey123456"; // keep in config!
-    private final long expirationMs = 86400000; // 1 day
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final long jwtExpirationMs = 86400000; // 1 day
 
-    private final Key key = Keys.hmacShaKeyFor(secret.getBytes());
+    public String generateToken(Authentication authentication) {
+        String username = authentication.getName();
+        String authorities = authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
 
-    public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", authorities)  // e.g., ROLE_USER or ROLE_ADMIN
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(key)
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token).getBody().getSubject();
+    public String getUsername(String token) {
+        return parseClaims(token).getSubject();
+    }
+
+    public String getRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody();
     }
 }
 
