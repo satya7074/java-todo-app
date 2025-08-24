@@ -1,5 +1,5 @@
 package com.circuitbaba.todo.logger;
 
 
-public class GlobalLogger {
+public interface GlobalLogger {
 }
