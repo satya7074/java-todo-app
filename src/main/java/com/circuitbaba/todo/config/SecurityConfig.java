@@ -3,6 +3,7 @@ package com.circuitbaba.todo.config;
 import com.circuitbaba.todo.filter.JwtAuthFilter;
 import com.circuitbaba.todo.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
+@Log4j2
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;

@@ -5,6 +5,7 @@ import com.circuitbaba.todo.entity.Status;
 import com.circuitbaba.todo.entity.Task;
 import com.circuitbaba.todo.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class DataSeeder implements CommandLineRunner {
 
     private final TaskRepository repo;
