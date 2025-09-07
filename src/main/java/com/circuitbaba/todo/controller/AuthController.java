@@ -1,5 +1,6 @@
 package com.circuitbaba.todo.controller;
 
+import com.circuitbaba.todo.dto.ResponseToken;
 import com.circuitbaba.todo.security.JwtUtil;
 import com.circuitbaba.todo.security.model.User;
 import com.circuitbaba.todo.security.repo.UserRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Log4j2
+@CrossOrigin("http://localhost:5173")
 public class AuthController {
 
     private final AuthenticationManager authManager;
@@ -33,14 +35,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
+    public ResponseEntity<ResponseToken> login(@RequestBody User user) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         // Store authentication in SecurityContext
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // Generate token from authenticated principal
         String token = jwtUtil.generateToken(authentication);
-        return ResponseEntity.ok("token: "+token);
+        return ResponseEntity.ok(ResponseToken.builder().token(token).build());
     }
 }
 

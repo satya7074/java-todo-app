@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 @Log4j2
+@CrossOrigin("http://localhost:5173")
 public class TaskController {
 
     private final TaskServiceImpl service;
